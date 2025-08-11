@@ -1,0 +1,43 @@
+FROM nvidia/cuda:12.2.2-runtime-ubuntu22.04
+
+# Instala dependências
+RUN apt-get update && apt-get install -y \
+    git python3 python3-venv python3-pip \
+    libgl1 libglib2.0-0 wget sudo && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Cria usuário não-root
+RUN groupadd -g 1000 ear && \
+    useradd -m -u 1000 -g ear -G sudo ear && \
+    echo "%sudo ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
+    mkdir -p /app && chown ear:ear /app
+
+WORKDIR /app
+USER ear
+
+# Variáveis de ambiente
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    VENV_DIR=/app/venv \
+    WEBUI_PORT=7860 \
+    API_PORT=7861
+
+# Clona o repositório
+RUN git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git .
+
+# Instala requirements
+#RUN python3 -m venv $VENV_DIR && \
+#    $VENV_DIR/bin/pip install --upgrade pip && \
+#    $VENV_DIR/bin/pip install -r requirements.txt
+RUN python3 -m venv $VENV_DIR && \
+    $VENV_DIR/bin/pip install --upgrade pip
+
+# Cria diretórios para volumes
+RUN mkdir -p models outputs extensions embeddings config && \
+    chown -R ear:ear models outputs extensions embeddings config
+
+EXPOSE 7860 7861
+
+# Comando de inicialização modificado
+# CMD ["bash", "-c", "./webui.sh --listen --api --xformers --enable-insecure-extension-access"]
+# removido a dependencia do xformers
+CMD ["bash", "-c", "./webui.sh --listen --api --enable-insecure-extension-access"] 

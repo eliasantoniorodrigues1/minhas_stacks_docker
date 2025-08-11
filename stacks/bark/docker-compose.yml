@@ -1,0 +1,20 @@
+services:
+  bark:
+    image: local-bark:latest        # Usando a imagem que você buildou
+    container_name: bark
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    volumes:
+      - /home/ear/data/bark:/app/data
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    networks:
+      - ai-net
+
+networks:
+  ai-net:
+    external: true

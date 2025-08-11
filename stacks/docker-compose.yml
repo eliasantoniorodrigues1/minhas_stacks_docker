@@ -1,0 +1,25 @@
+services:
+  open-webui:
+      image: ghcr.io/open-webui/open-webui:ollama
+      container_name: open-webui
+      hostname: open-webui
+      extra_hosts:
+        - "host.docker.internal:host-gateway"  # Adiciona resolução para o host
+      restart: unless-stopped
+      ports:
+        - "3000:8080"
+      volumes:
+        - /home/ear/data/ollama:/root/.ollama
+        - /home/ear/data/open-webui:/app/backend/data 
+      environment:
+        - OLLAMA_BASE_URL=http://ollama:11434
+        - WEBUI_IMAGE_PROVIDER=automatic1111
+        - WEBUI_IMAGE_API_HOST=http://stable-diffusion:7860
+        - WEBUI_IMAGE_API_HOST=http://host.docker.internal:7860  # Mágica aqui!
+        # - WEBUI_IMAGE_API_HOST=http://127.0.0.1:7860
+      networks:
+        - ai-net
+networks:
+  ai-net:
+    name: ai-net
+    external: true

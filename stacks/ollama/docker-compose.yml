@@ -1,0 +1,22 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - /home/ear/data/ollama:/root/.ollama
+    networks:
+      - ai-net
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia # Or amd for AMD GPUs
+              count: all
+              capabilities: [gpu]
+volumes:
+  ollama_volume:
+
+networks:
+  ai-net:
+    external: true
