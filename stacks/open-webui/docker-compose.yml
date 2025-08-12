@@ -9,8 +9,7 @@ services:
       - /home/ear/data/open-webui:/app/backend/data
     environment:
       - OLLAMA_BASE_URL=http://ollama:11434
-      # - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY:-default-secret-key}
-      # - PIPELINE_URL=http://pipelines:9099/
+      - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY:-default-secret-key}
       # Estas configurações são para o stable-diffusion, que é um container separado
       # - WEBUI_IMAGE_PROVIDER=automatic1111
       # - WEBUI_IMAGE_API_HOST=http://stable-diffusion:7860
