@@ -1,0 +1,32 @@
+services:
+  open-webui: # Renomeado para open-webui para consistência e clareza
+    container_name: open-webui
+    image: ghcr.io/open-webui/open-webui:main
+    ports:
+      - "3000:8080" # Mapeia a porta 3000 do host para a porta 8080 do container
+    volumes:
+      # Mapeia seu diretório local de dados para o diretório de dados do Open WebUI
+      - /home/ear/data/open-webui:/app/backend/data
+    networks:
+      - ai-net # Conecta o serviço Open WebUI à rede personalizada
+    environment:
+      # Configura o Open WebUI para se conectar ao serviço de Pipelines na rede Docker
+      - PIPELINE_URL=http://pipelines:9099/
+    restart: always
+
+  pipelines:
+      image: ghcr.io/open-webui/pipelines:main
+      volumes:
+        - pipelines:/app/pipelines
+      networks:
+        - ai-net
+      restart: always
+      environment:
+        - PIPELINES_API_KEY=0p3n-w3bu!
+
+networks:
+  # Define a rede 'ai-net' como uma rede externa, significando que ela já deve existir
+  ai-net:
+    external: true
+volumes:
+  pipelines: {}

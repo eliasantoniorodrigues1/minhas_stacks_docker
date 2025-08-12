@@ -1,0 +1,22 @@
+services:
+  pipelines:
+    container_name: pipelines
+    image: ghcr.io/open-webui/pipelines:main # Define a imagem a ser usada para o container
+    ports:
+      - "9099:9099" # Mapeia a porta 9099 do host para a porta 9099 do container
+    volumes:
+      # Define um volume nomeado para persistir os dados e configurações dos pipelines
+      # 'pipelines' é o nome do volume no Docker; '/app/pipelines' é o caminho dentro do container
+      - pipelines:/app/pipelines
+    networks:
+      - ai-net # Conecta o serviço à rede personalizada 'ai-net'
+    restart: always # Garante que o container sempre reinicie se parar
+
+networks:
+  # Define a rede 'ai-net' como uma rede externa, significando que ela já existe
+  ai-net:
+    external: true
+
+volumes:
+  # Declara o volume nomeado 'pipelines' que será criado e gerenciado pelo Docker
+  pipelines:

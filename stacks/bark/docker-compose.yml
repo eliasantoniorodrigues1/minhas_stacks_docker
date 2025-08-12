@@ -1,20 +1,33 @@
+version: '3.8'
+
 services:
   bark:
-    image: local-bark:latest        # Usando a imagem que você buildou
+    # O 'build: .' informa ao Docker Compose para construir a imagem usando o Dockerfile no diretório atual.
+    build: .
     container_name: bark
-    restart: unless-stopped
+    # Mapeia a porta 8000 do container para a porta 8000 na sua máquina host.
+    # Você pode alterar a porta da sua máquina (a da esquerda) se houver conflito. Ex: '8080:8000'.
     ports:
+      # Expõe a porta 5000 para que o serviço 'pipelines' possa se conectar
       - "5000:5000"
+    # Mapeia o volume de dados. Isso garante que os modelos e outros arquivos gerados pelo Bark
+    # sejam persistidos no seu diretório local, mesmo se o container for removido.
     volumes:
-      - /home/ear/data/bark:/app/data
+      - /home/ear/data/bark:/root/.cache/suno/bark
+    # Conecta o serviço à sua rede "ai-net".
+    networks:
+      - ai-net
+    # Define as configurações para o uso da GPU, o que é crucial para um desempenho rápido do Bark.
+    # Se você não tiver uma GPU, pode remover esta seção.
     deploy:
       resources:
         reservations:
           devices:
-            - capabilities: [gpu]
-    networks:
-      - ai-net
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
 
 networks:
+  # Define a rede externa "ai-net" para que o Docker Compose possa se conectar a ela.
   ai-net:
     external: true
