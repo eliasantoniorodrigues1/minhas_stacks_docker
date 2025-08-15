@@ -1,0 +1,28 @@
+services:
+  bark-infinity:
+    # Nome da imagem Docker que você construiu
+    image: bark-infinity:latest
+    # Mapeia a porta 7861 do seu host para a porta 7860 do container
+    # Isso evita conflito com o Stable Diffusion na porta 7860
+    ports:
+      - "7862:7860"
+    volumes:
+      # Mapeia o diretório de dados persistentes no seu host
+      # para o diretório /src dentro do container, onde a aplicação provavelmente salva os dados.
+      - "/home/ear/data/bark-infinity:/src"
+      # Mapeia o cache para um diretório relativo ao seu docker-compose.yml
+      - "./.cache:/root/.cache"
+    environment:
+      # Configuração necessária para o Gradio ser acessível de fora do container
+      - GRADIO_SERVER_NAME=0.0.0.0
+    deploy:
+      resources:
+        reservations:
+          devices:
+            # Garante que o container tenha acesso a todas as GPUs disponíveis
+            - capabilities: [gpu]
+    networks:
+      - ai-net
+networks:
+  ai-net:
+    external: true
